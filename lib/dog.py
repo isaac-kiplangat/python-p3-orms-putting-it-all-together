@@ -41,6 +41,30 @@ class Dog:
       new_dog.save()
       
       return new_dog
+  
+  
+    @classmethod
+    def new_from_db(cls, row):
+        # Create a new Dog instance from a database row (array)
+        dog = cls(name=row[1], breed=row[2])
+        dog.id = row[0]
+        return dog
+
+    @classmethod
+    def get_all(cls):
+        # Retrieve all records from the dogs table and return a list of Dog instances
+        sql = "SELECT * FROM dogs"
+        CURSOR.execute(sql)
+        rows = CURSOR.fetchall()
+        return [cls.new_from_db(row) for row in rows]
+
+    @classmethod
+    def find_by_name(cls, name):
+        # Find a dog by name and return a Dog instance
+        sql = "SELECT * FROM dogs WHERE name = ?"
+        CURSOR.execute(sql, (name,))
+        row = CURSOR.fetchone()
+        return cls.new_from_db(row) if row else None
     
 
 Dog.create("joey", "cocker spaniel")
